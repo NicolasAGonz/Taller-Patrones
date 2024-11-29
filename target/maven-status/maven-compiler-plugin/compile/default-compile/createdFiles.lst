@@ -1,0 +1,10 @@
+org\ey\utils\JsonPolicyReader.class
+org\ey\PolicyProcessor.class
+org\ey\enums\ResolutionEvent.class
+org\ey\utils\MovementsReader.class
+org\ey\utils\StringFileReader.class
+org\ey\Main.class
+org\ey\enums\PortfolioStatus.class
+org\ey\utils\UtilsProxy.class
+org\ey\dao\PortfolioDAO.class
+org\ey\dao\InMemoryPortfolioDAO.class

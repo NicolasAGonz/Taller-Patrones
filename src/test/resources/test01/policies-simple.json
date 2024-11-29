@@ -1,0 +1,17 @@
+[
+	{
+		"comparator":"greater_than ",
+		"compareToValue": "999",
+		"events": ["EXTREME_RISK"]
+	},
+	{
+		"comparator":"greater_or_equal ",
+		"compareToValue": "10000",
+		"events": ["BULL","BEAR"]
+	},
+	{
+		"comparator":"less_or_equal ",
+		"compareToValue": "999",
+		"events": ["AUDIT_RISK", "OUT_OF_INVESTORS"]
+	}
+]

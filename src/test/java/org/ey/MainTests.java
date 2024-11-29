@@ -17,14 +17,14 @@ public class MainTests {
     @MethodSource("expectedResultsComplete")
     public void testPolicyProcessor(final Long id , final Map<PortfolioStatus, PortfolioStatus> expectedResults){
         testForPolicy(id, expectedResults,
-                "src/main/test/resources/test01/policies.json", false);
+                "src/test/resources/test01/policies.json", false);
     }
 
     @ParameterizedTest
     @MethodSource("expectedResultsSimple")
     public void testPolicyProcessorSimple(final Long id , final Map<PortfolioStatus, PortfolioStatus> expectedResults){
         testForPolicy(id, expectedResults,
-                "src/main/test/resources/test01/policies-simple.json", true);
+                "src/test/resources/test01/policies-simple.json", true);
 
     }
 
@@ -36,7 +36,7 @@ public class MainTests {
         final List<Map<String, Object>> policies =
                 UtilsProxy.readPolicies(policiesPath);
         final List<Map<String, String>> movements=
-                UtilsProxy.readMovements("src/main/test/resources/test02/portfolio-movements.txt");
+                UtilsProxy.readMovements("src/test/resources/test02/portfolio-movements.txt");
 
 
         expectedResults.forEach(

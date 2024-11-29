@@ -1,0 +1,16 @@
+[
+{ 
+	"field" : "amount",
+	"comparator":"greater_than",
+	"compareToValue": "0",
+	"operator": "NOT",
+	"events": ["EXTREME_RISK"]
+},
+{ 
+	"field" : "amount",
+	"comparator":"greater_than",
+	"compareToValue": "10000",
+	"operator": "NOT",
+	"events": ["MARKET_COLLAPSE", "AUDIT_RISK"]
+}
+]

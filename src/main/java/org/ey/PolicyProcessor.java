@@ -1,8 +1,15 @@
 package org.ey;
 
+
 import org.ey.dao.PortfolioDAO;
 import org.ey.enums.PortfolioStatus;
+import org.ey.factories.CompletePolicyFactory;
+import org.ey.factories.PolicyFactory;
+import org.ey.factories.PolicyFactoryManager;
+import org.ey.factories.SimplePolicyFactory;
+import org.ey.policies.IPolicies;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +48,28 @@ public class PolicyProcessor {
 
     }
 
-    public void process(List<Map<String, Object>> policies, List<Map<String, String>> movements){
+    public void process(List<Map<String, Object>> policies, List<Map<String, String>> movements) {
         // TODO COMPLETAR
+        System.out.println("Imprimiendo politicas");
+        System.out.println(policies);
+
+        // Crear y registrar policy factories
+        List<PolicyFactory> factories = new ArrayList<>();
+        factories.add(new SimplePolicyFactory());
+        factories.add(new CompletePolicyFactory());
+
+        PolicyFactoryManager factoryManager = new PolicyFactoryManager(factories);
+
+        // Procesar cada JSON de la lista
+        for (Map<String, Object> policy : policies) {
+            try {
+                IPolicies newPolicy = factoryManager.createPolicy(policy);
+                newPolicy.displayDetails();
+            } catch (Exception e) {
+                System.err.println("Error de creación de política: " + e.getMessage());
+            }
+        }
+
+
     }
 }
