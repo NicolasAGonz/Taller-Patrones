@@ -21,8 +21,10 @@ public class SimplePolicyFactory extends PolicyFactory {
 
     @Override
     public boolean canHandle(Map<String, Object> policy) {
+        System.out.println("ESTOY EN EL HANDLER DEL FACTORY DE POLICIES SIMPLE, RECIBI ESTA POLICY");
+        System.out.println(policy);
         // SimplePolicy se maneja si solo tiene las claves "comparator", "compareToValue" y "events".
-        return policy.containsKey("field") && !policy.containsKey("operator");
+        return !policy.containsKey("field") && !policy.containsKey("operator");
     }
 }
 

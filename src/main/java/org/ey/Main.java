@@ -14,10 +14,10 @@ public class Main {
 
         PolicyProcessor policyProcessor = new PolicyProcessor(new InMemoryPortfolioDAO(), true);
 
-        policyProcessor.process(policiesSimple, movements);
+        //policyProcessor.process(policiesSimple, movements);
 
         //policyProcessor.setUseSimplePolicies(false);
-        //policyProcessor.processEjemplo(policiesComplete, movements);
+        policyProcessor.process(policiesComplete, movements);
 
     }
 }

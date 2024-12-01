@@ -50,26 +50,29 @@ public class PolicyProcessor {
 
     public void process(List<Map<String, Object>> policies, List<Map<String, String>> movements) {
         // TODO COMPLETAR
-        System.out.println("Imprimiendo politicas");
-        System.out.println(policies);
-
         // Crear y registrar policy factories
         List<PolicyFactory> factories = new ArrayList<>();
         factories.add(new SimplePolicyFactory());
         factories.add(new CompletePolicyFactory());
-
         PolicyFactoryManager factoryManager = new PolicyFactoryManager(factories);
+
+        //Crear y registrar las policies creadas
+        List<IPolicies> createdPolicies = new ArrayList<>();
 
         // Procesar cada JSON de la lista
         for (Map<String, Object> policy : policies) {
             try {
                 IPolicies newPolicy = factoryManager.createPolicy(policy);
-                newPolicy.displayDetails();
+                createdPolicies.add(newPolicy);
             } catch (Exception e) {
-                System.err.println("Error de creación de política: " + e.getMessage());
+                System.err.println("Error de creación de policy: " + e.getMessage());
             }
         }
 
+        System.out.println("SE HAN CREADO LAS SIGUIENTES POLICIES");
+        for (IPolicies policy : createdPolicies){
+            policy.displayDetails();
+        }
 
     }
 }

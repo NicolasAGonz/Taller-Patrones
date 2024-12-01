@@ -15,6 +15,8 @@ public class PolicyFactoryManager {
         for (PolicyFactory factory : factories) {
             if (factory.canHandle(policy)) {
                 return factory.createPolicy(policy);
+            } else {
+                System.out.println("La policy ingresada no pudo ser procesada por la factory solicitada.");
             }
         }
         throw new IllegalArgumentException("No factory can handle the given policy: " + policy);
