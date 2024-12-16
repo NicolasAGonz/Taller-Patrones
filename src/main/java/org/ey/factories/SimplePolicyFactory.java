@@ -11,7 +11,7 @@ public class SimplePolicyFactory extends PolicyFactory {
     @Override
     public IPolicies createPolicy(Map<String, Object> policy) {
         String comparator = (String) policy.get("comparator");
-        String compareTo = (String) policy.get("compareTo");
+        String compareTo = (String) policy.get("compareToValue");
         // Validar que los eventos sean una lista
         @SuppressWarnings("unchecked")
         List<String> events = (List<String>) policy.get("events");

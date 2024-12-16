@@ -1,6 +1,9 @@
 package org.ey.policies;
 
+import org.ey.enums.ResolutionEvent;
+
 import java.util.List;
+import java.util.Map;
 
 public class CompletePolicy implements IPolicies {
     private String field;
@@ -25,6 +28,11 @@ public class CompletePolicy implements IPolicies {
         System.out.println("CompareToValue: " + compareToValue);
         System.out.println("Operator: " + operator);
         System.out.println("Events: " + events);
+    }
+
+    @Override
+    public List<String> processMovement(Map<String, String> movement, List<String> resolutionEvents) {
+        return List.of();
     }
 
 }

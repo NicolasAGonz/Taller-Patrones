@@ -3,6 +3,7 @@ package org.ey;
 
 import org.ey.dao.PortfolioDAO;
 import org.ey.enums.PortfolioStatus;
+import org.ey.enums.ResolutionEvent;
 import org.ey.factories.CompletePolicyFactory;
 import org.ey.factories.PolicyFactory;
 import org.ey.factories.PolicyFactoryManager;
@@ -12,6 +13,9 @@ import org.ey.policies.IPolicies;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.ey.enums.ResolutionEvent.getAllEventsForProcess;
 
 public class PolicyProcessor {
     final PortfolioDAO dao;
@@ -73,6 +77,31 @@ public class PolicyProcessor {
         for (IPolicies policy : createdPolicies){
             policy.displayDetails();
         }
+
+
+
+        movements.forEach(
+                movement -> {
+                    System.out.println("----------------------------------------------------------------------------------------------------------------------------");
+                    System.out.println("CONSTRUYENDO LISTA DE EVENTOS");
+                    ArrayList<String> resolutionEvents = new ArrayList<>(List.of("EXTREME_RISK", "BULL", "BEAR", "DEBT_DEFAULT", "MARKET_COLLAPSE", "AUDIT_RISK", "OUT_OF_INVESTORS"));
+                    //ArrayList<ResolutionEvent> resolutionEvents = new ArrayList<>(getAllEventsForProcess());
+
+
+                    System.out.println("PROCESANDO MOVIMIENTO:");
+                    System.out.println(movement);
+
+                    for (IPolicies policy : createdPolicies){
+                        resolutionEvents = (ArrayList<String>) policy.processMovement(movement, resolutionEvents);
+                    }
+
+                    System.out.println("LISTADO FINAL DE EVENTOS");
+                    System.out.println(resolutionEvents);
+                    System.out.println("PRIMER EVENTO DEL LISTADO");
+                    System.out.println(resolutionEvents.get(0));
+
+                }
+        );
 
     }
 }
