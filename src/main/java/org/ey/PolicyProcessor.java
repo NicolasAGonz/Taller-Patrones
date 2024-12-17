@@ -3,23 +3,22 @@ package org.ey;
 
 import org.ey.dao.PortfolioDAO;
 import org.ey.enums.PortfolioStatus;
-import org.ey.enums.ResolutionEvent;
 import org.ey.factories.CompletePolicyFactory;
 import org.ey.factories.PolicyFactory;
 import org.ey.factories.PolicyFactoryManager;
 import org.ey.factories.SimplePolicyFactory;
 import org.ey.policies.IPolicies;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static org.ey.enums.ResolutionEvent.getAllEventsForProcess;
 
 public class PolicyProcessor {
     final PortfolioDAO dao;
     boolean useSimplePolicies;
+    private static final Logger logger = LoggerFactory.getLogger(PolicyProcessor.class);
 
     public PolicyProcessor(final PortfolioDAO dao, boolean useSimplePolicies){
         this.dao = dao;
@@ -36,8 +35,8 @@ public class PolicyProcessor {
 
     // ### EJEMPLO. EN LOS TEST SE USARÁ EL METODO "process" ###
     public void processEjemplo(List<Map<String, Object>> policies, List<Map<String, String>> movements){
-        System.out.println(movements);
-        System.out.println(policies);
+        logger.info(movements.toString());
+        logger.info(policies.toString());
 
         movements.forEach(
                 movement -> {
@@ -69,11 +68,11 @@ public class PolicyProcessor {
                 IPolicies newPolicy = factoryManager.createPolicy(policy);
                 createdPolicies.add(newPolicy);
             } catch (Exception e) {
-                System.err.println("Error de creación de policy: " + e.getMessage());
+                logger.error("Error de creación de policy: {}", e.getMessage());
             }
         }
 
-        System.out.println("SE HAN CREADO LAS SIGUIENTES POLICIES");
+        logger.info("SE HAN CREADO LAS SIGUIENTES POLICIES");
         for (IPolicies policy : createdPolicies){
             policy.displayDetails();
         }
@@ -82,23 +81,24 @@ public class PolicyProcessor {
 
         movements.forEach(
                 movement -> {
-                    System.out.println("----------------------------------------------------------------------------------------------------------------------------");
-                    System.out.println("CONSTRUYENDO LISTA DE EVENTOS");
+                    logger.info("/**************** PROCESANDO NUEVO MOVIMIENTO ****************/");
+                    logger.info("CONSTRUYENDO LISTA DE EVENTOS");
                     ArrayList<String> resolutionEvents = new ArrayList<>(List.of("EXTREME_RISK", "BULL", "BEAR", "DEBT_DEFAULT", "MARKET_COLLAPSE", "AUDIT_RISK", "OUT_OF_INVESTORS"));
                     //ArrayList<ResolutionEvent> resolutionEvents = new ArrayList<>(getAllEventsForProcess());
 
 
-                    System.out.println("PROCESANDO MOVIMIENTO:");
-                    System.out.println(movement);
+                    logger.info("PROCESANDO MOVIMIENTO:");
+                    logger.info(movement.toString());
 
+                    logger.info("COMENZANDO EJECUCION DE POLICIES");
                     for (IPolicies policy : createdPolicies){
                         resolutionEvents = (ArrayList<String>) policy.processMovement(movement, resolutionEvents);
                     }
 
-                    System.out.println("LISTADO FINAL DE EVENTOS");
-                    System.out.println(resolutionEvents);
-                    System.out.println("PRIMER EVENTO DEL LISTADO");
-                    System.out.println(resolutionEvents.get(0));
+                    logger.info("LISTADO FINAL DE EVENTOS");
+                    logger.info(String.valueOf(resolutionEvents));
+                    logger.info("PRIMER EVENTO DEL LISTADO");
+                    logger.info(resolutionEvents.get(0));
 
                 }
         );

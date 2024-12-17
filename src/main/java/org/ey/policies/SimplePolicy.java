@@ -1,6 +1,6 @@
 package org.ey.policies;
-import org.ey.enums.ResolutionEvent;
-import org.ey.strategies.ComparisonStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +9,8 @@ public class SimplePolicy implements IPolicies {
     private String comparator;
     private String compareTo;
     private List<String> events;
+    private static final Logger logger = LoggerFactory.getLogger(SimplePolicy.class);
+
 
     public SimplePolicy(String comparator, String compareTo, List<String> events) {
         this.comparator = comparator;
@@ -26,48 +28,47 @@ public class SimplePolicy implements IPolicies {
 
     @Override
     public List<String> processMovement(Map<String, String> movement, List<String> resolutionEvents) {
-        System.out.println("!!!!!!!!!!!");
-        System.out.println("DENTRO DE LA POLICY, RECIBI ESTE LISTADO DE EVENTOS");
-        System.out.println(resolutionEvents);
+        logger.info("DENTRO DE LA POLICY, RECIBI ESTE LISTADO DE EVENTOS");
+        logger.info(String.valueOf(resolutionEvents));
 
         boolean conditionMet = false;
         double amount = Double.parseDouble(movement.get("amount"));
-        double compareToValue = Double.parseDouble(String.valueOf(compareTo));
+        double valueToCompare = Double.parseDouble(String.valueOf(compareTo));
 
         // Evaluar la condición según el comparador
         switch (comparator.trim()) {
             case "greater_than":
-                System.out.println("COMPARANDO POR greater_than... ");
-                conditionMet = amount > compareToValue;
+                logger.info("COMPARANDO POR greater_than... ");
+                conditionMet = amount > valueToCompare;
                 break;
             case "greater_or_equal":
-                System.out.println("COMPARANDO POR greater_or_equal... ");
-                conditionMet = amount >= compareToValue;
+                logger.info("COMPARANDO POR greater_or_equal... ");
+                conditionMet = amount >= valueToCompare;
                 break;
             case "less_than":
-                System.out.println("COMPARANDO POR less_than... ");
-                conditionMet = amount < compareToValue;
+                logger.info("COMPARANDO POR less_than... ");
+                conditionMet = amount < valueToCompare;
                 break;
             case "less_or_equal":
-                System.out.println("COMPARANDO POR less_or_equal... ");
-                conditionMet = amount <= compareToValue;
+                logger.info("COMPARANDO POR less_or_equal... ");
+                conditionMet = amount <= valueToCompare;
                 break;
             case "equal":
-                System.out.println("COMPARANDO POR equal... ");
-                conditionMet = amount == compareToValue;
+                logger.info("COMPARANDO POR equal... ");
+                conditionMet = amount == valueToCompare;
                 break;
             default:
-                System.out.println("Comparador no reconocido: " + comparator);
+                logger.info("Comparador no reconocido: " + comparator);
                 break;
         };
 
-        System.out.println("RESULTADO DE LA COMPARACION");
-        System.out.println(conditionMet);
+        logger.info("RESULTADO DE LA COMPARACION");
+        logger.info(String.valueOf(conditionMet));
 
         // Si la condición se cumple, eliminar los eventos de la lista
         if (conditionMet) {
-            System.out.println("ELIMINANDO LOS SIGUIENTES EVENTOS");
-            System.out.println(events);
+            logger.info("ELIMINANDO LOS SIGUIENTES EVENTOS");
+            logger.info(String.valueOf(events));
             resolutionEvents.removeAll(events);
         }
 
