@@ -1,4 +1,5 @@
 package org.ey.policies;
+import org.ey.strategies.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ public class SimplePolicy implements IPolicies {
     private String comparator;
     private String compareTo;
     private List<String> events;
+    private ComparisonStrategy comparisonStrategy;
     private static final Logger logger = LoggerFactory.getLogger(SimplePolicy.class);
 
 
@@ -26,6 +28,10 @@ public class SimplePolicy implements IPolicies {
         System.out.println("Events: " + events);
     }
 
+    public void setStrategy(ComparisonStrategy comparisonStrategy){
+        this.comparisonStrategy = comparisonStrategy;
+    }
+
     @Override
     public List<String> processMovement(Map<String, String> movement, List<String> resolutionEvents) {
         logger.info("DENTRO DE LA POLICY, RECIBI ESTE LISTADO DE EVENTOS");
@@ -39,26 +45,31 @@ public class SimplePolicy implements IPolicies {
         switch (comparator.trim()) {
             case "greater_than":
                 logger.info("COMPARANDO POR greater_than... ");
-                conditionMet = amount > valueToCompare;
+                this.setStrategy(new GreaterThanStrategy() );
+                conditionMet = comparisonStrategy.compare(amount, valueToCompare);
                 break;
             case "greater_or_equal":
                 logger.info("COMPARANDO POR greater_or_equal... ");
-                conditionMet = amount >= valueToCompare;
+                this.setStrategy( new GreaterOrEqualStrategy());
+                conditionMet = comparisonStrategy.compare(amount, valueToCompare);
                 break;
             case "less_than":
                 logger.info("COMPARANDO POR less_than... ");
-                conditionMet = amount < valueToCompare;
+                this.setStrategy(new LessThanStrategy());
+                conditionMet = comparisonStrategy.compare(amount, valueToCompare);
                 break;
             case "less_or_equal":
                 logger.info("COMPARANDO POR less_or_equal... ");
-                conditionMet = amount <= valueToCompare;
+                this.setStrategy(new LessOrEqualStrategy());
+                conditionMet = comparisonStrategy.compare(amount, valueToCompare);
                 break;
             case "equal":
                 logger.info("COMPARANDO POR equal... ");
-                conditionMet = amount == valueToCompare;
+                this.setStrategy(new EqualStrategy());
+                conditionMet = comparisonStrategy.compare(amount, valueToCompare);
                 break;
             default:
-                logger.info("Comparador no reconocido: " + comparator);
+                logger.info("Comparador no reconocido: {}", comparator);
                 break;
         };
 
