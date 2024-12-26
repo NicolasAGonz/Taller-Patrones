@@ -4,6 +4,7 @@ import org.ey.strategies.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,9 +47,9 @@ public class CompletePolicy implements IPolicies {
         boolean conditionMet = false;
         /* MOVEMENTS VARIABLES */
         String movementAmount = movement.get("amount");
-        String movementCompany = movement.get("company");
-        String movementType = movement.get("type");
-        String movementIsForeign = movement.get("isForeign");
+        String movementCompany = movement.get("company"); //APPLE, TESLA, OIL...
+        String movementType = movement.get("type"); // STOCK, BOND, FUTURE...
+        String movementIsForeign = movement.get("isForeign"); // TRUE o FALSE
 
         logger.info("GENERANDO PREDICADO PARA POLICY COMPLETA...");
         String predicate = field+"-"+comparator+"-"+compareToValue;
@@ -87,30 +88,49 @@ public class CompletePolicy implements IPolicies {
                 break;
             case "isForeign":
                 logger.info("COMPARANDO POR isForeign... ");
+                conditionMet = movementIsForeign != null && movementIsForeign.toString().equalsIgnoreCase(compareToValue);
                 break;
             case "type":
                 logger.info("COMPARANDO POR type... ");
+                conditionMet = movementType != null && movementType.toString().equalsIgnoreCase(compareToValue);
                 break;
             case "company":
                 logger.info("COMPARANDO POR company... ");
+                conditionMet = movementCompany != null && movementCompany.toString().equalsIgnoreCase(compareToValue);
                 break;
             default:
                 logger.info("Campo de comparacion no reconocido: {}", field);
                 break;
         }
-
-
-
-
-
-
         logger.info("RESULTADO DE LA COMPARACION");
         logger.info(String.valueOf(conditionMet));
 
+        if (!conditionMet) {
+            return resolutionEvents; // Si la condición no se cumple, se devuelve la lista actual sin cambios.
+        };
 
+        switch (operator.trim().toUpperCase()) {
+            case "NOT":
+                // Eliminar los eventos de "events" de "resolutionEvents".
+                resolutionEvents.removeAll(events);
+                break;
 
+            case "ONLY":
+                // Reemplazar la lista actual con "events".
+                resolutionEvents = new ArrayList<>(events);
+                break;
+
+            case "RETURN":
+                // Devolver una lista que contiene solo el primer elemento de "events" y terminar el procesamiento.
+                List<String> firstElement = List.of(events.get(0));
+                resolutionEvents = new ArrayList<>(firstElement);
+                return resolutionEvents;
+                //return events.isEmpty() ? new ArrayList<>() : List.of(events.get(0));
+
+            default:
+                throw new IllegalArgumentException("Operador no reconocido: " + operator);
+        }
         return resolutionEvents;
-    }
+    };
 
 }
-

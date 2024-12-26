@@ -3,7 +3,7 @@
 		"field" : "isForeign",
 		"comparator":"equals",
 		"compareToValue": "TRUE",
-		"operator": "RESULT",
+		"operator": "RETURN",
 		"events": ["OUT_OF_INVESTORS"]
 	},
 	{
