@@ -1,13 +1,15 @@
 package org.ey;
 
-
 import org.ey.dao.PortfolioDAO;
 import org.ey.enums.PortfolioStatus;
+import org.ey.enums.ResolutionEvent;
 import org.ey.factories.CompletePolicyFactory;
 import org.ey.factories.PolicyFactory;
 import org.ey.factories.PolicyFactoryManager;
 import org.ey.factories.SimplePolicyFactory;
 import org.ey.policies.IPolicies;
+import org.ey.states.portfolio.IPortfolioState;
+import org.ey.states.portfolio.PortfolioStateFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +54,7 @@ public class PolicyProcessor {
     }
 
     public void process(List<Map<String, Object>> policies, List<Map<String, String>> movements) {
-        // TODO COMPLETAR
+
         // Crear y registrar policy factories
         List<PolicyFactory> factories = new ArrayList<>();
         factories.add(new SimplePolicyFactory());
@@ -77,31 +79,51 @@ public class PolicyProcessor {
             policy.displayDetails();
         }
 
-
+        logger.info("/****************************************************************************/");
+        logger.info("/**************** COMENZANDO EL PROCESAMIENTO DE MOVIMIENTOS ****************/");
+        logger.info("/****************************************************************************/");
 
         movements.forEach(
                 movement -> {
                     logger.info("/**************** PROCESANDO NUEVO MOVIMIENTO ****************/");
                     logger.info("CONSTRUYENDO LISTA DE EVENTOS");
-                    ArrayList<String> resolutionEvents = new ArrayList<>(List.of("EXTREME_RISK", "BULL", "BEAR", "DEBT_DEFAULT", "MARKET_COLLAPSE", "AUDIT_RISK", "OUT_OF_INVESTORS"));
-                    //ArrayList<ResolutionEvent> resolutionEvents = new ArrayList<>(getAllEventsForProcess());
+                    List<ResolutionEvent> resolutionEvents = new ArrayList<>(ResolutionEvent.getAllEventsForProcess());
+                    logger.info("PROCESANDO MOVIMIENTO:", movement.toString() );
 
-
-                    logger.info("PROCESANDO MOVIMIENTO:");
-                    logger.info(movement.toString());
 
                     logger.info("COMENZANDO EJECUCION DE POLICIES");
                     for (IPolicies policy : createdPolicies){
-                        resolutionEvents = (ArrayList<String>) policy.processMovement(movement, resolutionEvents);
-                    }
+                        policy.processMovement(movement, resolutionEvents);
+                        logger.info("POLICY PROCESADA, IMPRIMIENDO ESTADO ACTUAL DE EVENTOS");
+                        logger.info(resolutionEvents.toString());
+                    };
 
-                    logger.info("LISTADO FINAL DE EVENTOS");
-                    logger.info(String.valueOf(resolutionEvents));
-                    logger.info("PRIMER EVENTO DEL LISTADO");
-                    logger.info(resolutionEvents.get(0));
+                    logger.info("FINALIZO EL PROCESAMIENTO DE POLICIES PARA EL MOVIMIENTO, IMPRIMIENDO LISTADO FINAL DE EVENTOS");
+                    logger.info(resolutionEvents.toString());
 
-                }
-        );
+                    if (!resolutionEvents.isEmpty()) {
+                        String eventToApply = resolutionEvents.getFirst().name();
+                        logger.info("SE APLICARA EL SIGUIENTE EVENTO: {}", eventToApply);
 
-    }
-}
+                        ResolutionEvent resultEvent = ResolutionEvent.valueOf(eventToApply);
+                        String carteraId = movement.get("carteraId");
+
+                        logger.info("OBTENIENDO ESTADO ACTUAL DEL PORTAFOLIO");
+                        PortfolioStatus currentStatus = dao.getPortfolioStatus(Long.parseLong(carteraId));
+                        logger.info("ESTADO ACTUAL DEL PORTAFOLIO: {}", currentStatus);
+                        IPortfolioState currentState = PortfolioStateFactory.getStatus(currentStatus);
+
+                        logger.info("CALCULANDO PROXIMO ESTADO...");
+                        PortfolioStatus nextStatus = currentState.getNextStatus(resultEvent);
+
+                        logger.info("PASANDO CARTERA AL ESTADO: {}", nextStatus);
+                        dao.savePortfolioStatus(Long.valueOf(carteraId), nextStatus);
+                    };
+                    logger.info("/**************** FINALIZO EL PROCESAMIENTO DEL MOVIMIENTO ****************/");
+                });
+
+        logger.info("/****************************************************************************/");
+        logger.info("/**************** FINALIZADO EL PROCESAMIENTO DE MOVIMIENTOS ****************/");
+        logger.info("/****************************************************************************/");
+    };
+};

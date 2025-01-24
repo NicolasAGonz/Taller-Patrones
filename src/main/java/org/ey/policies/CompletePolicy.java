@@ -1,5 +1,6 @@
 package org.ey.policies;
 
+import org.ey.enums.ResolutionEvent;
 import org.ey.strategies.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class CompletePolicy implements IPolicies {
     }
 
     @Override
-    public List<String> processMovement(Map<String, String> movement, List<String> resolutionEvents) {
+    public void processMovement(Map<String, String> movement, List<ResolutionEvent> resolutionEvents) {
         logger.info("DENTRO DE LA POLICY, RECIBI ESTE LISTADO DE EVENTOS");
         logger.info(String.valueOf(resolutionEvents));
 
@@ -102,35 +103,38 @@ public class CompletePolicy implements IPolicies {
                 logger.info("Campo de comparacion no reconocido: {}", field);
                 break;
         }
-        logger.info("RESULTADO DE LA COMPARACION");
-        logger.info(String.valueOf(conditionMet));
+        logger.info("RESULTADO DE LA COMPARACION: {} ", conditionMet);
 
-        if (!conditionMet) {
-            return resolutionEvents; // Si la condición no se cumple, se devuelve la lista actual sin cambios.
-        };
-
-        switch (operator.trim().toUpperCase()) {
-            case "NOT":
-                // Eliminar los eventos de "events" de "resolutionEvents".
-                resolutionEvents.removeAll(events);
-                break;
-
-            case "ONLY":
-                // Reemplazar la lista actual con "events".
-                resolutionEvents = new ArrayList<>(events);
-                break;
-
-            case "RETURN":
-                // Devolver una lista que contiene solo el primer elemento de "events" y terminar el procesamiento.
-                List<String> firstElement = List.of(events.get(0));
-                resolutionEvents = new ArrayList<>(firstElement);
-                return resolutionEvents;
-                //return events.isEmpty() ? new ArrayList<>() : List.of(events.get(0));
-
-            default:
-                throw new IllegalArgumentException("Operador no reconocido: " + operator);
-        }
-        return resolutionEvents;
+        if (conditionMet) {
+            switch (operator.trim().toUpperCase()) {
+                case "NOT" -> {
+                    // se eliminan los eventos de events de la lista resultante.
+                    logger.info("APLICANDO OPERATOR NOT");
+                    for (String event : events) {
+                        resolutionEvents.removeIf(e -> e.name().equals(event));
+                    }
+                }
+                case "ONLY" -> {
+                    // events reemplaza y pasa a ser la lista resultante.
+                    logger.info("APLICANDO OPERATOR ONLY");
+                    resolutionEvents.clear();
+                    resolutionEvents.addAll(events.stream()
+                            .map(ResolutionEvent::valueOf)
+                            .toList());
+                }
+                case "RETURN" -> {
+                    // No se ejecutan más políticas y el resultado es el primer elemento de events.
+                    logger.info("APLICANDO OPERATOR RETURN");
+                    resolutionEvents.clear();
+                    for (String event : events) {
+                        resolutionEvents.add(ResolutionEvent.valueOf(event));
+                    }
+                    return; // Detiene la evaluación adicional
+                }
+                default -> {
+                    throw new IllegalArgumentException("Operador no reconocido: " + operator);
+                }
+            }; //END of switch
+        }; // END of for
     };
-
-}
+};

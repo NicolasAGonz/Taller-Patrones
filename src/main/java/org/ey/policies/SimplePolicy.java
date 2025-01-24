@@ -1,4 +1,5 @@
 package org.ey.policies;
+import org.ey.enums.ResolutionEvent;
 import org.ey.strategies.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class SimplePolicy implements IPolicies {
     }
 
     @Override
-    public List<String> processMovement(Map<String, String> movement, List<String> resolutionEvents) {
+    public void processMovement(Map<String, String> movement, List<ResolutionEvent> resolutionEvents) {
         logger.info("DENTRO DE LA POLICY, RECIBI ESTE LISTADO DE EVENTOS");
         logger.info(String.valueOf(resolutionEvents));
 
@@ -78,13 +79,13 @@ public class SimplePolicy implements IPolicies {
 
         // Si la condición se cumple, eliminar los eventos de la lista
         if (conditionMet) {
-            logger.info("ELIMINANDO LOS SIGUIENTES EVENTOS");
-            logger.info(String.valueOf(events));
-            resolutionEvents.removeAll(events);
+            logger.info("ELIMINANDO LOS SIGUIENTES EVENTOS:", String.valueOf(events) );
+            for (String event : events) {
+                resolutionEvents.removeIf(e -> e.name().equals(event));
+            }
         }
 
-        return resolutionEvents;
-    }
+    };
 
 
 }

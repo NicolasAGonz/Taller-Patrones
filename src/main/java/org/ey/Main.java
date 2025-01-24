@@ -7,17 +7,17 @@ public class Main {
     public static void main(String[] args) {
         //policies
         var policiesSimple = UtilsProxy.readPolicies("src/main/resources/policies-simple.json");
-        //var policiesComplete = UtilsProxy.readPolicies("src/main/resources/policies.json");
-        var policiesComplete = UtilsProxy.readPolicies("src/test/resources/test01/policies.json");
+        var policiesComplete = UtilsProxy.readPolicies("src/main/resources/policies.json");
+        //var policiesComplete = UtilsProxy.readPolicies("src/test/resources/test01/policies.json");
 
         //movements
         var movements = UtilsProxy.readMovements();
 
         PolicyProcessor policyProcessor = new PolicyProcessor(new InMemoryPortfolioDAO(), true);
 
-        //policyProcessor.process(policiesSimple, movements);
+        policyProcessor.process(policiesSimple, movements);
 
-        //policyProcessor.setUseSimplePolicies(false);
+        policyProcessor.setUseSimplePolicies(false);
         policyProcessor.process(policiesComplete, movements);
 
     }
