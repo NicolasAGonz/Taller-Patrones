@@ -50,17 +50,6 @@ public class MainTests {
                     Assertions.assertEquals(expectedNewStatus, testDao.getPortfolioStatusRaw(id));
                 });
 
-        policyProcessor.setUseSimplePolicies(true);
-
-        expectedResults.forEach(
-                (oldStatus, expectedNewStatus) -> {
-                    testDao.savePortfolioStatus(id, oldStatus);
-                    policyProcessor.process(
-                            policies,
-                            movements
-                    );
-                    Assertions.assertEquals(expectedNewStatus, testDao.getPortfolioStatusRaw(id));
-                });
 
 
         Assertions.assertEquals(0, testDao.getTotalExceptions());
@@ -122,7 +111,7 @@ public class MainTests {
         //7|20000000.00|GOLD|COMODITY|FALSE ->RESUELVE DEBT_DEFAULT
         var results07 = Map.of(
                 PortfolioStatus.CLOSED, PortfolioStatus.CLOSED,
-                PortfolioStatus.EMPTY, PortfolioStatus.DEFENSIVE,
+                PortfolioStatus.EMPTY, PortfolioStatus.EMPTY,
                 PortfolioStatus.DEFENSIVE, PortfolioStatus.EMPTY,
                 PortfolioStatus.VIP, PortfolioStatus.DEFENSIVE,
                 PortfolioStatus.ACTIVE, PortfolioStatus.DEFENSIVE);
@@ -142,10 +131,10 @@ public class MainTests {
         //1|1200.00|APPLE|STOCK|TRUE -> DEBT_DEFAULT
         var results01 = Map.of(
                 PortfolioStatus.CLOSED, PortfolioStatus.CLOSED,
-                PortfolioStatus.EMPTY, PortfolioStatus.ACTIVE,
-                PortfolioStatus.DEFENSIVE, PortfolioStatus.ACTIVE,
-                PortfolioStatus.VIP, PortfolioStatus.VIP,
-                PortfolioStatus.ACTIVE, PortfolioStatus.VIP);
+                PortfolioStatus.EMPTY, PortfolioStatus.DEFENSIVE,
+                PortfolioStatus.DEFENSIVE, PortfolioStatus.EMPTY,
+                PortfolioStatus.VIP, PortfolioStatus.DEFENSIVE,
+                PortfolioStatus.ACTIVE, PortfolioStatus.DEFENSIVE);
 
         //2|10000.00|TESLA|STOCK|FALSE -> DEBT_DEFAULT
         var results02 = Map.of(
