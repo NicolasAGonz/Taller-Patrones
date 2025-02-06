@@ -36,12 +36,13 @@ public class MainTests {
         final List<Map<String, Object>> policies =
                 UtilsProxy.readPolicies(policiesPath);
         final List<Map<String, String>> movements=
-                UtilsProxy.readMovements("src/test/resources/test02/portfolio-movements.txt");
+                UtilsProxy.readMovements("src/main/test/resources/test01/portfolio-movements.txt");
 
 
         expectedResults.forEach(
                 (oldStatus, expectedNewStatus) -> {
                     testDao.savePortfolioStatus(id, oldStatus);
+                    System.out.println("Testing id: " + id + ", setStatus:" + oldStatus + ",expectedNew: " + expectedNewStatus);
                     policyProcessor.process(
                             policies,
                             movements
@@ -60,6 +61,7 @@ public class MainTests {
                     );
                     Assertions.assertEquals(expectedNewStatus, testDao.getPortfolioStatusRaw(id));
                 });
+
 
         Assertions.assertEquals(0, testDao.getTotalExceptions());
         Assertions.assertTrue(testDao.getInvocations("getPortfolioStatus") > 0);
@@ -137,7 +139,7 @@ public class MainTests {
     }
 
     private static Stream<Arguments> expectedResultsSimple() {
-        //1|1200.00|APPLE|STOCK|TRUE -> RESUELVE BULL
+        //1|1200.00|APPLE|STOCK|TRUE -> DEBT_DEFAULT
         var results01 = Map.of(
                 PortfolioStatus.CLOSED, PortfolioStatus.CLOSED,
                 PortfolioStatus.EMPTY, PortfolioStatus.ACTIVE,
@@ -145,53 +147,53 @@ public class MainTests {
                 PortfolioStatus.VIP, PortfolioStatus.VIP,
                 PortfolioStatus.ACTIVE, PortfolioStatus.VIP);
 
-        //2|10000.00|TESLA|STOCK|FALSE -> RESUELVE BEAR
+        //2|10000.00|TESLA|STOCK|FALSE -> DEBT_DEFAULT
         var results02 = Map.of(
                 PortfolioStatus.CLOSED, PortfolioStatus.CLOSED,
-                PortfolioStatus.EMPTY, PortfolioStatus.EMPTY,
+                PortfolioStatus.EMPTY, PortfolioStatus.DEFENSIVE,
                 PortfolioStatus.DEFENSIVE, PortfolioStatus.EMPTY,
-                PortfolioStatus.VIP, PortfolioStatus.EMPTY,
-                PortfolioStatus.ACTIVE, PortfolioStatus.EMPTY);
+                PortfolioStatus.VIP, PortfolioStatus.DEFENSIVE,
+                PortfolioStatus.ACTIVE, PortfolioStatus.DEFENSIVE);
 
-        //3|200.0|LELIQ|BOND|FALSE -> RESUELVE AUDIT_RISK
+        //3|200.0|LELIQ|BOND|FALSE -> EXTREME_RISK
         var results03 = Map.of(
                 PortfolioStatus.CLOSED, PortfolioStatus.CLOSED,
-                PortfolioStatus.EMPTY, PortfolioStatus.EMPTY,
-                PortfolioStatus.DEFENSIVE, PortfolioStatus.DEFENSIVE,
-                PortfolioStatus.VIP, PortfolioStatus.VIP,
-                PortfolioStatus.ACTIVE, PortfolioStatus.ACTIVE);
+                PortfolioStatus.EMPTY, PortfolioStatus.CLOSED,
+                PortfolioStatus.DEFENSIVE, PortfolioStatus.CLOSED,
+                PortfolioStatus.VIP, PortfolioStatus.CLOSED,
+                PortfolioStatus.ACTIVE, PortfolioStatus.CLOSED);
 
-        //4|100000.00|DOLLAR|FUTURE|FALSE -> RESUELVE MARKET_COLLAPSE
+        //4|100000.00|DOLLAR|FUTURE|FALSE -> DEBT_DEFAULT
         var results04 = Map.of(
+                PortfolioStatus.CLOSED, PortfolioStatus.CLOSED,
+                PortfolioStatus.EMPTY, PortfolioStatus.DEFENSIVE,
+                PortfolioStatus.DEFENSIVE, PortfolioStatus.EMPTY,
+                PortfolioStatus.VIP, PortfolioStatus.DEFENSIVE,
+                PortfolioStatus.ACTIVE, PortfolioStatus.DEFENSIVE);
+
+        //5|100000.00|OIL|FUTURE|TRUE ->DEBT_DEFAULT
+        var results05 = Map.of(
+                PortfolioStatus.CLOSED, PortfolioStatus.CLOSED,
+                PortfolioStatus.EMPTY, PortfolioStatus.DEFENSIVE,
+                PortfolioStatus.DEFENSIVE, PortfolioStatus.EMPTY,
+                PortfolioStatus.VIP, PortfolioStatus.DEFENSIVE,
+                PortfolioStatus.ACTIVE, PortfolioStatus.DEFENSIVE);
+
+        //6|150000.00|LEBAD|BOND|FALSE -> MARKET_COLLAPSE
+        var results06 = Map.of(
                 PortfolioStatus.CLOSED, PortfolioStatus.CLOSED ,
                 PortfolioStatus.EMPTY, PortfolioStatus.EMPTY,
                 PortfolioStatus.DEFENSIVE, PortfolioStatus.EMPTY,
                 PortfolioStatus.VIP, PortfolioStatus.CLOSED ,
                 PortfolioStatus.ACTIVE, PortfolioStatus.EMPTY);
 
-        //5|100000.00|OIL|FUTURE|TRUE -> RESUELVE OUT_OF_INVESTORS
-        var results05 = Map.of(
-                PortfolioStatus.CLOSED, PortfolioStatus.CLOSED,
-                PortfolioStatus.EMPTY, PortfolioStatus.EMPTY,
-                PortfolioStatus.DEFENSIVE, PortfolioStatus.CLOSED,
-                PortfolioStatus.VIP, PortfolioStatus.VIP,
-                PortfolioStatus.ACTIVE, PortfolioStatus.DEFENSIVE);
-
-        //6|150000.00|LEBAD|BOND|FALSE -> RESUELVE AUDIT_RISK
-        var results06 = Map.of(
-                PortfolioStatus.CLOSED, PortfolioStatus.CLOSED,
-                PortfolioStatus.EMPTY, PortfolioStatus.EMPTY,
-                PortfolioStatus.DEFENSIVE, PortfolioStatus.DEFENSIVE,
-                PortfolioStatus.VIP, PortfolioStatus.VIP,
-                PortfolioStatus.ACTIVE, PortfolioStatus.ACTIVE);
-
-        //7|20000000.00|GOLD|COMODITY|FALSE ->RESUELVE DEBT_DEFAULT
+        //7|20000000.00|GOLD|COMODITY|FALSE -> MARKET_COLLAPSE
         var results07 = Map.of(
-                PortfolioStatus.CLOSED, PortfolioStatus.CLOSED,
-                PortfolioStatus.EMPTY, PortfolioStatus.DEFENSIVE,
+                PortfolioStatus.CLOSED, PortfolioStatus.CLOSED ,
+                PortfolioStatus.EMPTY, PortfolioStatus.EMPTY,
                 PortfolioStatus.DEFENSIVE, PortfolioStatus.EMPTY,
-                PortfolioStatus.VIP, PortfolioStatus.DEFENSIVE,
-                PortfolioStatus.ACTIVE, PortfolioStatus.DEFENSIVE);
+                PortfolioStatus.VIP, PortfolioStatus.CLOSED ,
+                PortfolioStatus.ACTIVE, PortfolioStatus.EMPTY);
 
         return Stream.of(
                 Arguments.of(1L, results01),
