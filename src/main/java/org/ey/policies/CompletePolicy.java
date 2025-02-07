@@ -42,8 +42,11 @@ public class CompletePolicy implements IPolicies {
 
     @Override
     public void processMovement(Map<String, String> movement, List<ResolutionEvent> resolutionEvents) {
-        logger.info("DENTRO DE LA POLICY, RECIBI ESTE LISTADO DE EVENTOS");
+        logger.info("COMENZANDO EJECUCION DE POLICY COMPLETA, RECIBI ESTE LISTADO DE EVENTOS");
         logger.info(String.valueOf(resolutionEvents));
+        logger.info("APLICANDO POLICY");
+        displayDetails();
+
 
         boolean conditionMet = false;
         /* MOVEMENTS VARIABLES */
@@ -64,7 +67,7 @@ public class CompletePolicy implements IPolicies {
                         this.setStrategy(new GreaterThanStrategy() );
                         conditionMet = comparisonStrategy.compare(Double.parseDouble(movementAmount), Double.parseDouble(compareToValue));
                     }
-                    case "greater_or_equal" -> {
+                    case "greater_or_equal", "greater_equal" -> {
                         logger.info("COMPARANDO POR greater_or_equal... ");
                         this.setStrategy( new GreaterOrEqualStrategy());
                         conditionMet = comparisonStrategy.compare(Double.parseDouble(movementAmount), Double.parseDouble(compareToValue));
@@ -74,7 +77,7 @@ public class CompletePolicy implements IPolicies {
                         this.setStrategy(new LessThanStrategy());
                         conditionMet = comparisonStrategy.compare(Double.parseDouble(movementAmount), Double.parseDouble(compareToValue));
                     }
-                    case "less_or_equal" -> {
+                    case "less_or_equal", "less_equal" -> {
                         logger.info("COMPARANDO POR less_or_equal... ");
                         this.setStrategy(new LessOrEqualStrategy());
                         conditionMet = comparisonStrategy.compare(Double.parseDouble(movementAmount), Double.parseDouble(compareToValue));
@@ -109,14 +112,15 @@ public class CompletePolicy implements IPolicies {
             switch (operator.trim().toUpperCase()) {
                 case "NOT" -> {
                     // se eliminan los eventos de events de la lista resultante.
-                    logger.info("APLICANDO OPERATOR NOT");
+                    logger.warn("APLICANDO OPERADOR NOT: se eliminan los eventos de events de la lista resultante.");
+
                     for (String event : events) {
                         resolutionEvents.removeIf(e -> e.name().equals(event));
                     }
                 }
                 case "ONLY" -> {
                     // events reemplaza y pasa a ser la lista resultante.
-                    logger.info("APLICANDO OPERATOR ONLY");
+                    logger.warn("APLICANDO OPERADOR ONLY: events reemplaza y pasa a ser la lista resultante.");
                     resolutionEvents.clear();
                     resolutionEvents.addAll(events.stream()
                             .map(ResolutionEvent::valueOf)
@@ -124,7 +128,7 @@ public class CompletePolicy implements IPolicies {
                 }
                 case "RETURN" -> {
                     // No se ejecutan más políticas y el resultado es el primer elemento de events.
-                    logger.info("APLICANDO OPERATOR RETURN");
+                    logger.warn("APLICANDO OPERADOR RETURN: No se ejecutan más políticas y el resultado es el primer elemento de events.");
                     resolutionEvents.clear();
                     for (String event : events) {
                         resolutionEvents.add(ResolutionEvent.valueOf(event));

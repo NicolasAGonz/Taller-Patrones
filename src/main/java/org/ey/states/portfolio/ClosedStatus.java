@@ -8,7 +8,7 @@ public class ClosedStatus implements IPortfolioState {
     @Override
     public PortfolioStatus getNextStatus(ResolutionEvent resultEvent) {
         return switch (resultEvent) {
-            default -> PortfolioStatus.CLOSED;
+            default -> PortfolioStatus.CLOSED; // Las carteras CLOSED no deben salir de este evento
         };
     }
 }

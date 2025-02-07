@@ -88,7 +88,8 @@ public class PolicyProcessor {
                     logger.info("/**************** PROCESANDO NUEVO MOVIMIENTO ****************/");
                     logger.info("CONSTRUYENDO LISTA DE EVENTOS");
                     List<ResolutionEvent> resolutionEvents = new ArrayList<>(ResolutionEvent.getAllEventsForProcess());
-                    logger.info("PROCESANDO MOVIMIENTO:", movement.toString() );
+                    logger.info("PROCESANDO MOVIMIENTO:");
+                    logger.info(movement.toString());
 
 
                     logger.info("COMENZANDO EJECUCION DE POLICIES");
@@ -98,26 +99,32 @@ public class PolicyProcessor {
                         logger.info(resolutionEvents.toString());
                     };
 
-                    logger.info("FINALIZO EL PROCESAMIENTO DE POLICIES PARA EL MOVIMIENTO, IMPRIMIENDO LISTADO FINAL DE EVENTOS");
-                    logger.info(resolutionEvents.toString());
+                    logger.error("FINALIZO EL PROCESAMIENTO DE POLICIES PARA EL MOVIMIENTO, IMPRIMIENDO LISTADO FINAL DE EVENTOS");
+                    logger.error(resolutionEvents.toString());
 
                     if (!resolutionEvents.isEmpty()) {
                         String eventToApply = resolutionEvents.getFirst().name();
-                        logger.info("SE APLICARA EL SIGUIENTE EVENTO: {}", eventToApply);
+                        logger.error("SE APLICARA EL SIGUIENTE EVENTO: {}", eventToApply);
 
                         ResolutionEvent resultEvent = ResolutionEvent.valueOf(eventToApply);
                         String carteraId = movement.get("carteraId");
 
-                        logger.info("OBTENIENDO ESTADO ACTUAL DEL PORTAFOLIO");
+
+                        logger.error("OBTENIENDO ESTADO ACTUAL DEL PORTAFOLIO...");
                         PortfolioStatus currentStatus = dao.getPortfolioStatus(Long.parseLong(carteraId));
-                        logger.info("ESTADO ACTUAL DEL PORTAFOLIO: {}", currentStatus);
+                        logger.error("ESTADO ACTUAL DEL PORTAFOLIO: {}", currentStatus);
                         IPortfolioState currentState = PortfolioStateFactory.getStatus(currentStatus);
 
-                        logger.info("CALCULANDO PROXIMO ESTADO...");
+                        logger.error("CALCULANDO PROXIMO ESTADO...");
                         PortfolioStatus nextStatus = currentState.getNextStatus(resultEvent);
 
-                        logger.info("PASANDO CARTERA AL ESTADO: {}", nextStatus);
+                        logger.error("ACTUALIZANDO CARTERA AL ESTADO OBTENIDO: {}", nextStatus);
                         dao.savePortfolioStatus(Long.valueOf(carteraId), nextStatus);
+
+                        logger.error("OBTENIENDO ESTADO ACTUALIZADO DEL PORTAFOLIO");
+                        PortfolioStatus newCurrentStatus = dao.getPortfolioStatus(Long.parseLong(carteraId));
+                        logger.error(String.valueOf(newCurrentStatus));
+
                     };
                     logger.info("/**************** FINALIZO EL PROCESAMIENTO DEL MOVIMIENTO ****************/");
                 });

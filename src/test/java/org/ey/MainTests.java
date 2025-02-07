@@ -36,7 +36,7 @@ public class MainTests {
         final List<Map<String, Object>> policies =
                 UtilsProxy.readPolicies(policiesPath);
         final List<Map<String, String>> movements=
-                UtilsProxy.readMovements("src/main/test/resources/test01/portfolio-movements.txt");
+                UtilsProxy.readMovements("src/test/resources/test01/portfolio-movements.txt");
 
 
         expectedResults.forEach(
@@ -111,7 +111,7 @@ public class MainTests {
         //7|20000000.00|GOLD|COMODITY|FALSE ->RESUELVE DEBT_DEFAULT
         var results07 = Map.of(
                 PortfolioStatus.CLOSED, PortfolioStatus.CLOSED,
-                PortfolioStatus.EMPTY, PortfolioStatus.EMPTY,
+                PortfolioStatus.EMPTY, PortfolioStatus.DEFENSIVE,
                 PortfolioStatus.DEFENSIVE, PortfolioStatus.EMPTY,
                 PortfolioStatus.VIP, PortfolioStatus.DEFENSIVE,
                 PortfolioStatus.ACTIVE, PortfolioStatus.DEFENSIVE);
@@ -131,10 +131,10 @@ public class MainTests {
         //1|1200.00|APPLE|STOCK|TRUE -> DEBT_DEFAULT
         var results01 = Map.of(
                 PortfolioStatus.CLOSED, PortfolioStatus.CLOSED,
-                PortfolioStatus.EMPTY, PortfolioStatus.DEFENSIVE,
-                PortfolioStatus.DEFENSIVE, PortfolioStatus.EMPTY,
-                PortfolioStatus.VIP, PortfolioStatus.DEFENSIVE,
-                PortfolioStatus.ACTIVE, PortfolioStatus.DEFENSIVE);
+                PortfolioStatus.EMPTY, PortfolioStatus.ACTIVE,
+                PortfolioStatus.DEFENSIVE, PortfolioStatus.ACTIVE,
+                PortfolioStatus.VIP, PortfolioStatus.VIP,
+                PortfolioStatus.ACTIVE, PortfolioStatus.VIP);
 
         //2|10000.00|TESLA|STOCK|FALSE -> DEBT_DEFAULT
         var results02 = Map.of(

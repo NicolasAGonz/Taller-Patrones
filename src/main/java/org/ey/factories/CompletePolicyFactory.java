@@ -27,7 +27,7 @@ public class CompletePolicyFactory extends PolicyFactory {
         System.out.println("ESTOY EN EL HANDLER DEL FACTORY DE POLICIES COMPLETAS, RECIBI ESTA POLICY");
         System.out.println(policy);
         // CompletePolicy se maneja si tiene las claves adicionales "field" y "operator".
-        return policy.containsKey("field") && policy.containsKey("operator") && policy.get("events") instanceof List;
+        return policy.containsKey("field") && policy.containsKey("operator");
     }
 }
 

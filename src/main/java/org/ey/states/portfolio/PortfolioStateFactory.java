@@ -14,6 +14,6 @@ public class PortfolioStateFactory {
     );
 
     public static IPortfolioState getStatus(PortfolioStatus portfolioStatus) {
-        return status.getOrDefault(status, new DefaultStatus());
+        return status.getOrDefault(portfolioStatus, new DefaultStatus());
     }
 }

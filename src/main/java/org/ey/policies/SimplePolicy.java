@@ -35,8 +35,10 @@ public class SimplePolicy implements IPolicies {
 
     @Override
     public void processMovement(Map<String, String> movement, List<ResolutionEvent> resolutionEvents) {
-        logger.info("DENTRO DE LA POLICY, RECIBI ESTE LISTADO DE EVENTOS");
+        logger.info("COMENZANDO EJECUCION DE POLICY COMPLETA, RECIBI ESTE LISTADO DE EVENTOS");
         logger.info(String.valueOf(resolutionEvents));
+        logger.info("APLICANDO POLICY");
+        displayDetails();
 
         boolean conditionMet = false;
         double amount = Double.parseDouble(movement.get("amount"));
@@ -79,7 +81,8 @@ public class SimplePolicy implements IPolicies {
 
         // Si la condición se cumple, eliminar los eventos de la lista
         if (conditionMet) {
-            logger.info("ELIMINANDO LOS SIGUIENTES EVENTOS:", String.valueOf(events) );
+            logger.warn("ELIMINANDO LOS SIGUIENTES EVENTOS: ");
+            logger.warn(String.valueOf(events));
             for (String event : events) {
                 resolutionEvents.removeIf(e -> e.name().equals(event));
             }

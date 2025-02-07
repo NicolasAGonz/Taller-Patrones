@@ -10,7 +10,7 @@ public class VipStatus implements IPortfolioState {
             case EXTREME_RISK, MARKET_COLLAPSE -> PortfolioStatus.CLOSED;
             case BEAR -> PortfolioStatus.EMPTY;
             case DEBT_DEFAULT -> PortfolioStatus.DEFENSIVE;
-            default -> PortfolioStatus.VIP;
+            default -> PortfolioStatus.VIP; //Este cubre Bull(Vip) -> VIP, OOI(Vip) -> VIP
         };
     };
 };

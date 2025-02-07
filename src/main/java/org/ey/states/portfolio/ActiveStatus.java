@@ -7,10 +7,10 @@ public class ActiveStatus implements IPortfolioState {
     @Override
     public PortfolioStatus getNextStatus(ResolutionEvent resultEvent) {
         return switch (resultEvent) {
-            case ResolutionEvent.OUT_OF_INVESTORS, ResolutionEvent.DEBT_DEFAULT -> PortfolioStatus.DEFENSIVE;
-            case ResolutionEvent.MARKET_COLLAPSE, BEAR -> PortfolioStatus.EMPTY;
-            case ResolutionEvent.EXTREME_RISK -> PortfolioStatus.CLOSED;
-            case ResolutionEvent.BULL -> PortfolioStatus.VIP;
+            case EXTREME_RISK -> PortfolioStatus.CLOSED;
+            case BULL -> PortfolioStatus.VIP;
+            case MARKET_COLLAPSE, BEAR -> PortfolioStatus.EMPTY;
+            case OUT_OF_INVESTORS, DEBT_DEFAULT -> PortfolioStatus.DEFENSIVE;
             default -> PortfolioStatus.ACTIVE;
         };
     }
